@@ -1,0 +1,91 @@
+import tkinter as tk
+from swiplserver import PrologMQI, PrologThread
+import json
+# starter app format courtesy of https://tkdocs.com/shipman/index-2.html
+
+class Application(tk.Frame):
+    def __init__(self, master=None):
+        tk.Frame.__init__(self,master)
+        self.grid()
+        self.createWidgets()
+    
+    def createWidgets(self):
+        ### DEFINITION FRAME
+        self.definitionFrame = tk.Frame(self)
+
+        self.definitionHeader = tk.Label(self.definitionFrame, height=1, text="Word Definition:")
+        #self.definitionHeader.insert("20.0", "Word Definition:")
+        self.definitionHeader.grid(sticky=(tk.N,tk.W,tk.E))
+        self.definitionText = tk.Text(self.definitionFrame)
+        self.definitionText.grid(sticky=(tk.N,tk.W,tk.E,tk.S))
+
+        self.definitionFrame.grid()
+        ### END DEFINITION FRAME
+
+        ### SEARCH FRAME
+        self.searchFrame = tk.Frame(self)
+
+        self.searchQuery = tk.StringVar()
+        self.searchQuery.trace_add("write", self.updateQuery)
+        self.searchInput = tk.Entry(self.searchFrame, textvariable=self.searchQuery)
+        self.searchInput.grid(column=0, row=0)
+
+        self.searchButton = tk.Button(self.searchFrame, text="Search", command=self.queryDictionary)
+        self.searchButton.grid(column=1, row=0)
+
+        self.searchList = []
+        self.searchListVar = tk.StringVar(value=self.searchList)
+        self.searchOptions = tk.Listbox(self.searchFrame, listvariable=self.searchListVar)
+        self.searchOptions.grid(row=1)
+
+        # NOTE: use self.searchListVar.set(self.searchList) to update the ListBox variables after changing self.searchList
+
+        self.searchFrame.grid()
+        ### END SEARCH FRAME
+
+        ### QUIT BUTTON
+        self.quitButton = tk.Button(self, text="Quit", command = self.quit)
+        self.quitButton.grid(sticky=(tk.S, tk.W, tk.E))
+        ### END QUIT BUTTON
+
+    # queries for possible autofill options and updates the listbox with possible options
+    def updateQuery(self, *args):
+        #print(args)
+        # query PL with the query of the user to get possible autofill options
+        if (self.searchQuery.get() == ""):
+            self.searchList = []
+            self.searchListVar.set(self.searchList)
+            return
+        # updates the listbox with the possible options
+        result = pl_thread.query("get_possibs(\"" + self.searchQuery.get() + "\", X).")
+        if (not result):
+            self.searchList = []
+            self.searchListVar.set(self.searchList)
+            return
+        self.searchList = []
+        for item in result[0]['X']:
+            self.searchList.append(item)
+        self.searchListVar.set(self.searchList)
+
+    # reads whatever is in the search text entry and updates the definition text with whatever it finds
+    def queryDictionary(self, *args):
+        #print(args)
+        if (self.searchQuery.get() == ""):
+            print("No Entry")
+        # read the search input and fetch the definition from PL
+        result = pl_thread.query("get_definition(\"" + self.searchQuery.get() + "\", X).")
+
+        # update the definition box with the fetched definition
+        out = self.searchQuery.get()
+        for t in result:
+            out += "\n" + self.searchQuery.get() + " : " + t['X']
+        self.definitionText.delete(1.0, self.definitionText.index('end'))
+        self.definitionText.insert('end', out)
+
+with PrologMQI() as mqi:
+    with mqi.create_thread() as pl_thread:
+        # load the PL code
+        pl_thread.query("[\"../src/frontend-testing\"]")
+        app = Application()
+        app.master.title("Dictionary")
+        app.mainloop()
