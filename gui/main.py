@@ -16,7 +16,7 @@ class Application(tk.Frame):
         self.definitionHeader = tk.Label(self.definitionFrame, height=1, text="Word Definition:")
         #self.definitionHeader.insert("20.0", "Word Definition:")
         self.definitionHeader.grid(sticky=(tk.N,tk.W,tk.E))
-        self.definitionText = tk.Text(self.definitionFrame)
+        self.definitionText = tk.Text(self.definitionFrame,state="disabled")
         self.definitionText.grid(sticky=(tk.N,tk.W,tk.E,tk.S))
 
         self.definitionFrame.grid()
@@ -29,6 +29,7 @@ class Application(tk.Frame):
         self.searchQuery.trace_add("write", self.updateQuery)
         self.searchInput = tk.Entry(self.searchFrame, textvariable=self.searchQuery)
         self.searchInput.grid(column=0, row=0)
+        self.searchInput.bind("<KeyPress>", lambda e: self.queryDictionary() if self.focus_get() == self.searchInput and e.keysym == 'Return' else ())
 
         self.searchButton = tk.Button(self.searchFrame, text="Search", command=self.queryDictionary)
         self.searchButton.grid(column=1, row=0)
@@ -37,6 +38,8 @@ class Application(tk.Frame):
         self.searchListVar = tk.StringVar(value=self.searchList)
         self.searchOptions = tk.Listbox(self.searchFrame, listvariable=self.searchListVar)
         self.searchOptions.grid(row=1)
+        self.searchOptions.bind("<Double-1>", lambda e: self.queryDictionary(self.searchList[self.searchOptions.curselection()[0]]))
+        self.searchOptions.bind("<KeyPress>", lambda e: self.queryDictionary(self.searchList[self.searchOptions.curselection()[0]]) if self.focus_get() == self.searchOptions  and e.keysym == 'Return' else ())
 
         # NOTE: use self.searchListVar.set(self.searchList) to update the ListBox variables after changing self.searchList
 
@@ -58,6 +61,7 @@ class Application(tk.Frame):
             return
         # updates the listbox with the possible options
         result = pl_thread.query("get_possibs(\"" + self.searchQuery.get() + "\", X).")
+
         if (not result):
             self.searchList = []
             self.searchListVar.set(self.searchList)
@@ -68,24 +72,40 @@ class Application(tk.Frame):
         self.searchListVar.set(self.searchList)
 
     # reads whatever is in the search text entry and updates the definition text with whatever it finds
-    def queryDictionary(self, *args):
+    def queryDictionary(self, nsearch="", *args):
         #print(args)
-        if (self.searchQuery.get() == ""):
+        if (self.searchQuery.get() == "" and nsearch == ""):
             print("No Entry")
         # read the search input and fetch the definition from PL
-        result = pl_thread.query("get_definition(\"" + self.searchQuery.get() + "\", X).")
+        word = ""
+        result = ""
+        if (nsearch == ""):
+            word = self.searchQuery.get()
+        else:
+            word = nsearch
+        result = pl_thread.query("get_definition(\"" + word + "\", X).")
 
+        print("Result:")
+        print(result)
         # update the definition box with the fetched definition
-        out = self.searchQuery.get()
+        out = word
+        if(result == False):
+            return
         for t in result:
-            out += "\n" + self.searchQuery.get() + " : " + t['X']
+            out += "\n" + word + " : " + t['X']
+        self.definitionText['state'] = 'normal'
         self.definitionText.delete(1.0, self.definitionText.index('end'))
         self.definitionText.insert('end', out)
+        self.definitionText['state'] = 'disabled'
 
-with PrologMQI() as mqi:
+with PrologMQI(prolog_path_args=["--stack-limit=16g"]) as mqi:
     with mqi.create_thread() as pl_thread:
         # load the PL code
         pl_thread.query("[\"../src/frontend-testing\"]")
+        #pl_thread.query("[\"../src/actual_work_2\"]")
+
+        #pl_thread.query("[\"../src/trie_testing.pl\"]")
+        #pl_thread.query("read_csv_and_insert('../data/english_dictionary_2.csv', T), nb_setval(dictionary, T).")
         app = Application()
         app.master.title("Dictionary")
         app.mainloop()
