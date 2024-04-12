@@ -60,7 +60,8 @@ class Application(tk.Frame):
             self.searchListVar.set(self.searchList)
             return
         # updates the listbox with the possible options
-        result = pl_thread.query("get_possibs(\"" + self.searchQuery.get() + "\", X).")
+        #result = pl_thread.query("get_possibs(\"" + self.searchQuery.get() + "\", X).")
+        result = pl_thread.query("find_preds('" + self.searchQuery.get() + "', _, X).")
 
         if (not result):
             self.searchList = []
@@ -83,16 +84,21 @@ class Application(tk.Frame):
             word = self.searchQuery.get()
         else:
             word = nsearch
-        result = pl_thread.query("get_definition(\"" + word + "\", X).")
+        #result = pl_thread.query("get_definition(\"" + word + "\", X).")
+        #print("query: " + self.lookup_bind + "find_word(T,'" + word + "',X).")
+        #result = pl_thread.query(self.lookup_bind + "find_word(T,'" + word + "',X).")
+        result = pl_thread.query("find_word('" + word + "',X).")
 
-        print("Result:")
-        print(result)
+        #print("Result:")
+        #print(result[0]['X'])
         # update the definition box with the fetched definition
         out = word
         if(result == False):
             return
-        for t in result:
-            out += "\n" + word + " : " + t['X']
+        #for t in result:
+        #    out += "\n" + word + " : " + t['X']
+        for t in result[0]['X']:
+            out += "\n" + word + " : " + t
         self.definitionText['state'] = 'normal'
         self.definitionText.delete(1.0, self.definitionText.index('end'))
         self.definitionText.insert('end', out)
@@ -101,11 +107,12 @@ class Application(tk.Frame):
 with PrologMQI(prolog_path_args=["--stack-limit=16g"]) as mqi:
     with mqi.create_thread() as pl_thread:
         # load the PL code
-        pl_thread.query("[\"../src/frontend-testing\"]")
+        #pl_thread.query("[\"../src/frontend-testing\"]")
         #pl_thread.query("[\"../src/actual_work_2\"]")
 
         #pl_thread.query("[\"../src/trie_testing.pl\"]")
         #pl_thread.query("read_csv_and_insert('../data/english_dictionary_2.csv', T), nb_setval(dictionary, T).")
+        pl_thread.query("[\"../src/dict.pl\"]")
         app = Application()
         app.master.title("Dictionary")
         app.mainloop()
