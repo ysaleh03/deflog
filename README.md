@@ -2,11 +2,11 @@
 ## Jenilee Chen, Youssef Saleh, Oleg Yurchenko
 
 ### What is the problem?
-Where would humanity be without dictionaries? Since writing first started, humans have been writing repositories of word definitions, and this is nothing if not a continuation of that grand tradition.
+Where would humanity be without dictionaries? Since writing first started, humans have been writing repositories of word definitions, and this is nothing if not a continuation of that grand tradition. With so much of our daily tasks being online, we wanted to create a dictionary that combined the offline reliability of a paper dictionary, with the speed and ease of using an online one.
 
 Using Prolog, we want to create a lightweight dictionary client with autocomplete suggestions. The main goals we want to achieve are:
 
-1. **Intuitive User Interface:** Since our project is made for non-technical users, we want the UI to be intuitive and easy to use out of the box.
+1. **Intuitive User Interface:** Since our project is made for users, we want the UI to be intuitive and easy to use out of the box.
 2. **Quick Lookup:** We want searching to be as fast as possible. Using a trie would allow us to search for words in O(log n) time, which is ideal.
 3. **Simple Implementation:** We implemented a simple GUI that allows users to type in a word, select from live autocomplete suggestions and get the definition.
 
