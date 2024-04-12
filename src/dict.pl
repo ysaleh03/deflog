@@ -8,7 +8,7 @@
 :- read_csv_and_insert('../data/english_dictionary_2.csv', Trie), nb_setval(trie, Trie).
 
 find_trie_node([trie(K, Children, Def)|Tries], [Char], [C|Word], Definition, Trie) :-
-  (K = Char -> C = K, Def = Definition, trie(K, Children, Def) = Trie, Word = [];
+  (K = Char -> C = K, Definition = Def, Trie = trie(K, Children, Def), Word = [];
   find_trie_node(Tries, [Char], [C|Word], Definition, Trie)).
 
 find_trie_node([trie(K, Children, _)|Tries], [Char|Chars], [C|Word], Definition, TOut) :-
@@ -20,25 +20,29 @@ find_trie_node([trie(K, Children, _)|Tries], [Char|Chars], [C|Word], Definition,
 
 trie_to_words(trie(K, [], Def), Out) :-
   length(Def, L),
-  (L > 0 -> Out = [[K]];
-  Out = [[]]).
+  L > 0,
+  Out = [[K]].
 
 trie_to_words(trie(K, Children, Def), Out) :-
   length(Children, C),
   C > 0,
-  convlist(trie_to_words, Children, Outppp),
-  foldl(append, Outppp, [[]], Outpp),
+  maplist(trie_to_words, Children, Outppp),
+  foldl(append, Outppp, [], Outpp),
   maplist(append([K]), Outpp, Outp),
   length(Def, L),
   (L > 0 -> Out = [[K]|Outp];
   Out = Outp).
 
-find_word(String, Definition) :- 
+find_word(UString, Definition) :- 
+  %string_lower(UString, String),
+  UString = String,
   string_codes(String, Chars),
   nb_getval(trie, Trie),
   find_trie_node(Trie, Chars, _, Definition, _). 
 
-find_preds(String, Word, Out) :-
+find_preds(UString, Word, Out) :-
+  %string_lower(UString, String),
+  UString = String,
   string_codes(String, Chars),
   nb_getval(trie, Trie),
   find_trie_node(Trie, Chars, FWord, _, TOut),

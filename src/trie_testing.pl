@@ -78,7 +78,9 @@ read_csv_and_insert(File, Final_tries) :-
 
 insert_csv_rows([], Trie, Trie).
 insert_csv_rows([Row|Rest_rows], Original_tries, Final_tries) :-
-  Row = row(Key, _, Value),
+  Row = row(UKey, _, Value),
+  %string_lower(UKey, Key),
+  Key = UKey,
   string_codes(Key, Char_list_key),
   trie_insert(Original_tries, Char_list_key, Value, Intermediate_Tries),
   insert_csv_rows(Rest_rows, Intermediate_Tries, Final_tries).
@@ -99,12 +101,3 @@ print_tries([trie(Key,Children,Values)|Rest], Layer) :-
 
   print_tries(Children, [" "|Layer]),
   print_tries(Rest, Layer).
-
-print_root([trie(K, _, _)]) :-
-  write(K).
-
-print_root([trie(K, _, _)|Rest]) :-
-  write(K),
-  write(","),
-  print_root(Rest).
-
