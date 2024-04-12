@@ -8,7 +8,7 @@ Using Prolog, we want to create a lightweight dictionary client with autocomplet
 
 1. **Intuitive User Interface:** Since our project is made for non-technical users, we want the UI to be intuitive and easy to use out of the box.
 2. **Quick Lookup:** We want searching to be as fast as possible. Using a trie would allow us to search for words in O(log n) time, which is ideal.
-3. **Simple Implementation:**
+3. **Simple Implementation:** We implemented a simple GUI that allows users to type in a word, select from live autocomplete suggestions and get the definition.
 
 ### What is something extra?
 Live autocomplete suggestions for users as they type words in.
