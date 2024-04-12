@@ -6,7 +6,8 @@
 :- [trie_testing].
 
 find_word(Trie, String, Definition) :- 
-  string_chars(String, Chars), find_word_helper(Trie, Chars, Definition).
+  string_codes(String, Chars), find_word_helper(Trie, Chars, Definition).
+
 
 find_word_helper([trie(K, _, Def)|Tries], [Char], Definition) :- 
   K = Char -> Def = Definition; find_word_helper(Tries, [Char], Definition). 
