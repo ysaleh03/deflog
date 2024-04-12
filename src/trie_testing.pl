@@ -73,17 +73,17 @@ trie_insert(trie(K, Children, Vals), [KF|[KS|KR]], V, trie(K, NewChildren, Vals)
   append(Children, [NewTrie], NewChildren).
 
 read_csv_and_insert(File, Final_tries) :-
-  csv_read_file(File, Rows),
+  csv_read_file(File, Rows), % built-in csv_read_file
   insert_csv_rows(Rows, [], Final_tries). % where '[]' is the new trie structure
 
 insert_csv_rows([], Trie, Trie).
 insert_csv_rows([Row|Rest_rows], Original_tries, Final_tries) :-
-  Row = row(UKey, _, Value),
-  %string_lower(UKey, Key),
+  Row = row(UKey, _, Value), % gets the row of csv file
+  %string_lower(UKey, Key), 
   Key = UKey,
-  string_codes(Key, Char_list_key),
-  trie_insert(Original_tries, Char_list_key, Value, Intermediate_Tries),
-  insert_csv_rows(Rest_rows, Intermediate_Tries, Final_tries).
+  string_codes(Key, Char_list_key), % changes string to string codes ASCII / numeric codes
+  trie_insert(Original_tries, Char_list_key, Value, Intermediate_Tries), % calls Oleg's trie_insert function
+  insert_csv_rows(Rest_rows, Intermediate_Tries, Final_tries). % recursively inserts rest of rows
 
 print_tries(L, _) :-
   is_list(L),
