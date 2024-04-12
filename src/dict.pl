@@ -5,9 +5,11 @@
 
 :- [trie_testing].
 
-find_word(Trie, String, Definition) :- 
-  string_codes(String, Chars), find_word_helper(Trie, Chars, Definition).
+:- read_csv_and_insert('../data/english_dictionary_2.csv', Trie), nb_setval(trie, Trie).
 
+find_word(Trie, String, Definition) :- 
+  string_codes(String, Chars),
+  find_word_helper(Trie, Chars, Definition).
 
 find_word_helper([trie(K, _, Def)|Tries], [Char], Definition) :- 
   K = Char -> Def = Definition; find_word_helper(Tries, [Char], Definition). 
