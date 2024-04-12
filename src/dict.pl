@@ -12,12 +12,15 @@ find_trie_node([trie(K, Children, Def)|Tries], [Char], [C|Word], Definition, Tri
   find_trie_node(Tries, [Char], [C|Word], Definition, Trie)).
 
 find_trie_node([trie(K, Children, _)|Tries], [Char|Chars], [C|Word], Definition, TOut) :-
+  length(Chars, H),
+  H > 0,
   (K = Char -> C = K,
               find_trie_node(Children, Chars, Word, Definition, TOut);
   find_trie_node(Tries, [Char|Chars], [C|Word], Definition, TOut)).
 
 trie_to_words(trie(K, [], Def), Out) :-
-  (length(Def, L), L > 0 -> Out = [[K]];
+  length(Def, L),
+  (L > 0 -> Out = [[K]];
   Out = [[]]).
 
 trie_to_words(trie(K, Children, Def), Out) :-

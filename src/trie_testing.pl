@@ -100,4 +100,11 @@ print_tries([trie(Key,Children,Values)|Rest], Layer) :-
   print_tries(Children, [" "|Layer]),
   print_tries(Rest, Layer).
 
+print_root([trie(K, _, _)]) :-
+  write(K).
+
+print_root([trie(K, _, _)|Rest]) :-
+  write(K),
+  write(","),
+  print_root(Rest).
 
