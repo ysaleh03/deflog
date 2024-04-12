@@ -1,6 +1,6 @@
 % main dictionary program
 
-:- [trie_testing].
+:- [trie_structure].
 :- read_csv_and_insert('../data/english_dictionary_2.csv', Trie), nb_setval(trie, Trie).
 
 % searches the trie for a matching node
