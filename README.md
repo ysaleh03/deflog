@@ -2,7 +2,7 @@
 ## Jenilee Chen, Youssef Saleh, Oleg Yurchenko
 
 ### What is the problem?
-Where would humanity be without dictionaries? Since writing first started, humans have been writing repositories of word definitions, and this is nothing if not a continuation of that grand tradition. With so much of our daily tasks being online, we wanted to create a dictionary that combined the offline reliability of a paper dictionary, with the speed and ease of using an online one.
+Since writing first started, humans have been writing repositories of word definitions, and this is just continuation of that tradition. With so much of our daily tasks being online, we wanted to create a dictionary that combined the offline reliability of a paper dictionary, with the speed and ease of using an online one.
 
 Using Prolog, we want to create a lightweight dictionary client with autocomplete suggestions. The main goals we want to achieve are:
 
